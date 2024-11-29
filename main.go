@@ -8,6 +8,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/nsf/termbox-go"
 )
 
 // Define the direction type and constants for snake movement
@@ -47,7 +48,27 @@ var (
 
 // Initialize the game model with default values
 func initialModel() model {
-	width, height := 30, 10
+	rand.Seed(time.Now().UnixNano())
+
+	// Initialize termbox to get terminal size
+	if err := termbox.Init(); err != nil {
+		fmt.Printf("Failed to initialize termbox: %v", err)
+		os.Exit(1)
+	}
+	defer termbox.Close()
+
+	width, height := termbox.Size()
+	width -= 2  // Adjust for borders
+	height -= 2 // Adjust for borders
+
+	// Ensure width and height are positive
+	if width <= 0 {
+		width = 1
+	}
+	if height <= 0 {
+		height = 1
+	}
+
 	snake := []position{{x: width / 2, y: height / 2}}
 	food := position{x: rand.Intn(width), y: rand.Intn(height)}
 	return model{
@@ -68,7 +89,7 @@ func (m model) Init() tea.Cmd {
 
 // Update the game state based on the received message
 func tick() tea.Cmd {
-	return tea.Tick(time.Second/5, func(t time.Time) tea.Msg {
+	return tea.Tick(time.Second/10, func(t time.Time) tea.Msg {
 		return t
 	})
 }
@@ -181,7 +202,7 @@ func (m model) View() string {
 	board[m.food.y+1][m.food.x+1] = 'X'
 
 	// Convert the board to a string with styles
-	s := ""
+	var s string
 	for _, row := range board {
 		for _, cell := range row {
 			switch cell {
