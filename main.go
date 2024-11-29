@@ -76,7 +76,7 @@ func tick() tea.Cmd {
 // Update the game state based on the received message
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if m.gameOver {
-		return m, nil
+		return m, tea.Quit
 	}
 
 	switch msg := msg.(type) {
@@ -124,13 +124,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Check for collisions with the walls or itself
 			if newHead.x < 0 || newHead.x >= m.width || newHead.y < 0 || newHead.y >= m.height {
 				m.gameOver = true
-				return m, nil
+				return m, tea.Quit
 			}
 
 			for _, p := range m.snake {
 				if p == newHead {
 					m.gameOver = true
-					return m, nil
+					return m, tea.Quit
 				}
 			}
 
