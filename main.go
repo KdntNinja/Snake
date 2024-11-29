@@ -66,14 +66,13 @@ func (m model) Init() tea.Cmd {
 	return tick()
 }
 
-// Define the tick command to update the game state periodically
+// Update the game state based on the received message
 func tick() tea.Cmd {
-	return tea.Tick(time.Second/10, func(t time.Time) tea.Msg {
+	return tea.Tick(time.Second/5, func(t time.Time) tea.Msg {
 		return t
 	})
 }
 
-// Update the game state based on the received message
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if m.gameOver {
 		return m, tea.Quit
@@ -103,47 +102,45 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case time.Time:
-		// Update the snake's position every second tick
-		m.tickCount++
-		if m.tickCount%2 == 0 {
-			head := m.snake[0]
-			newHead := head
+		// Update the snake's position on every tick
+		head := m.snake[0]
+		newHead := head
 
-			// Move the snake's head in the current direction
-			switch m.direction {
-			case up:
-				newHead.y--
-			case down:
-				newHead.y++
-			case left:
-				newHead.x--
-			case right:
-				newHead.x++
-			}
+		// Move the snake's head in the current direction
+		switch m.direction {
+		case up:
+			newHead.y--
+		case down:
+			newHead.y++
+		case left:
+			newHead.x--
+		case right:
+			newHead.x++
+		}
 
-			// Check for collisions with the walls or itself
-			if newHead.x < 0 || newHead.x >= m.width || newHead.y < 0 || newHead.y >= m.height {
+		// Check for collisions with the walls or itself
+		if newHead.x < 0 || newHead.x >= m.width || newHead.y < 0 || newHead.y >= m.height {
+			m.gameOver = true
+			return m, tea.Quit
+		}
+
+		for _, p := range m.snake {
+			if p == newHead {
 				m.gameOver = true
 				return m, tea.Quit
 			}
-
-			for _, p := range m.snake {
-				if p == newHead {
-					m.gameOver = true
-					return m, tea.Quit
-				}
-			}
-
-			// Update the snake's body
-			m.snake = append([]position{newHead}, m.snake...)
-
-			// Check if the snake has eaten the food
-			if newHead == m.food {
-				m.food = position{x: rand.Intn(m.width), y: rand.Intn(m.height)}
-			} else {
-				m.snake = m.snake[:len(m.snake)-1]
-			}
 		}
+
+		// Update the snake's body
+		m.snake = append([]position{newHead}, m.snake...)
+
+		// Check if the snake has eaten the food
+		if newHead == m.food {
+			m.food = position{x: rand.Intn(m.width), y: rand.Intn(m.height)}
+		} else {
+			m.snake = m.snake[:len(m.snake)-1]
+		}
+
 		return m, tick()
 	}
 
