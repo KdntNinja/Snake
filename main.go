@@ -61,7 +61,7 @@ func initialModel() model {
 	}
 }
 
-// Init the program with a tick command
+// Init initializes the program with a tick command
 func (m model) Init() tea.Cmd {
 	return tick()
 }
@@ -150,7 +150,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-// View the game view as a string
+// View renders the game view as a string
 func (m model) View() string {
 	if m.gameOver {
 		return "Game Over!\nPress q to quit.\n"
