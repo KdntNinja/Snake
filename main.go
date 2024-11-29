@@ -153,7 +153,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // View renders the game view as a string
 func (m model) View() string {
 	if m.gameOver {
-		return "Game Over!\nPress q to quit.\n"
+		return "Game Over!"
 	}
 
 	// Create the game board with borders
