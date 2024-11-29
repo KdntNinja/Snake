@@ -47,7 +47,7 @@ var (
 
 // Initialize the game model with default values
 func initialModel() model {
-	width, height := 20, 10
+	width, height := 30, 10
 	snake := []position{{x: width / 2, y: height / 2}}
 	food := position{x: rand.Intn(width), y: rand.Intn(height)}
 	return model{
